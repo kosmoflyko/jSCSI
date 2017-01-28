@@ -1,9 +1,15 @@
 #!groovy
 
+def mvnHome = tool 'M3'
+  
 node {
+  stage('Get Repo')
   git url: 'git@github.com:sebastiangraf/jSCSI.git'
-  def mvnHome = tool 'M3'
-  sh "${mvnHome}/bin/mvn -B -Dmaven.test.failure.ignore verify"
-  step([$class: 'JUnitResultArchiver', testResults:
-'**/target/foobar/TEST-*.xml'])
+  
+  stage('jUnit Tests')
+  sh "${mvnHome}/bin/mvn -B clean test"
+  junit '**/target/*.xml'
+  
+  stage('Deploy Snapshot')
+  sh "${mvnHome}/bin/mvn -B -DskipTests=true clean deploy"
 }
