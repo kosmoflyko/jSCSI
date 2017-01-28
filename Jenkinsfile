@@ -2,7 +2,7 @@
 
 node {
   def mvnHome = tool 'M3'
-  properties([pipelineTriggers([[$class: 'GitHubPushTrigger'], pollSCM('H/15 * * * *')])])
+  properties([pipelineTriggers([$class: 'GitHubPushTrigger'])])
   
   stage('Get Repo')
   git url: 'git@github.com:sebastiangraf/jSCSI.git'
