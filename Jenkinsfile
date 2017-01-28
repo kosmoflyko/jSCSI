@@ -2,13 +2,14 @@
 
 node {
   def mvnHome = tool 'M3'
+  properties([pipelineTriggers([[$class: 'GitHubPushTrigger'], pollSCM('H/15 * * * *')])])
   
   stage('Get Repo')
   git url: 'git@github.com:sebastiangraf/jSCSI.git'
   
   stage('jUnit Tests')
   sh "${mvnHome}/bin/mvn -B clean test"
-  junit '**/target/*.xml'
+  step([$class: 'Publisher'])
   
   stage('Deploy Snapshot')
   sh "${mvnHome}/bin/mvn -B -DskipTests=true clean deploy"
