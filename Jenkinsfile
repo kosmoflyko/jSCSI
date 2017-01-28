@@ -1,8 +1,8 @@
 #!groovy
 
-def mvnHome = tool 'M3'
-  
 node {
+  def mvnHome = tool 'M3'
+  
   stage('Get Repo')
   git url: 'git@github.com:sebastiangraf/jSCSI.git'
   
