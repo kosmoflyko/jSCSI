@@ -14,10 +14,18 @@ node {
   
   if (BRANCH_NAME.equals('master')) {
     stage('Deploy Snapshot since on main branch')
-    sh "${mvnHome}/bin/mvn -B -DskipTests=true clean deploy"  
+    sh "${mvnHome}/bin/mvn -B -DskipTests=true clean deploy"
   } else {
     echo "Skipping deploy since not on master branch but on branch " + BRANCH_NAME
   }
+}
+
+stage('Releasing?')
+timeout(time:5, unit:'MINUTES') {
+    input message:'Approve release?'
+    stage('Releasing!')
+    node {
+       echo "Testing... "
     
-  
+    }
 }
