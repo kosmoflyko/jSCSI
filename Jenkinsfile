@@ -7,10 +7,17 @@ node {
   stage('Get Repo')
   git url: 'git@github.com:sebastiangraf/jSCSI.git'
   
-  stage('jUnit Tests')
+  stage('Unit Tests')
   sh "${mvnHome}/bin/mvn -B clean test"
   step([$class: 'Publisher'])
   
-  stage('Deploy Snapshot')
-  sh "${mvnHome}/bin/mvn -B -DskipTests=true clean deploy"
+  
+  if (BRANCH_NAME.equals('master')) {
+    stage('Deploy Snapshot since on main branch')
+    sh "${mvnHome}/bin/mvn -B -DskipTests=true clean deploy"  
+  } else {
+    echo "Skipping deploy since not on master branch but on branch " + BRANCH_NAME
+  }
+    
+  
 }
