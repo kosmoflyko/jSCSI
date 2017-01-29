@@ -4,28 +4,34 @@ node {
   def mvnHome = tool 'M3'
   properties([pipelineTriggers([[$class: 'GitHubPushTrigger']])])
   
-  stage('Get Repo')
-  git url: 'git@github.com:sebastiangraf/jSCSI.git'
+  stage('Get Repo') {
+      git url: 'git@github.com:sebastiangraf/jSCSI.git'
+  }
   
-  stage('Unit Tests')
-  sh "${mvnHome}/bin/mvn -B clean test"
-  step([$class: 'Publisher'])
+  stage('Unit Tests'){
+      sh "${mvnHome}/bin/mvn -B clean test"
+      step([$class: 'Publisher'])
+  }
+  
   
   
   if (BRANCH_NAME.equals('master')) {
-    stage('Deploy Snapshot since on main branch')
-    sh "${mvnHome}/bin/mvn -B -DskipTests=true clean deploy"
+    stage('Deploy Snapshot since on main branch'){
+        sh "${mvnHome}/bin/mvn -B -DskipTests=true clean deploy"
+        stage('Releasing?'){
+            timeout(time:5, unit:'MINUTES') {
+                input message:'Approve release?'
+                stage('Releasing!')
+                node {
+                   echo "Testing... "
+    
+                }
+            }
+        }
+    }
   } else {
     echo "Skipping deploy since not on master branch but on branch " + BRANCH_NAME
   }
 }
 
-stage('Releasing?')
-timeout(time:5, unit:'MINUTES') {
-    input message:'Approve release?'
-    stage('Releasing!')
-    node {
-       echo "Testing... "
-    
-    }
-}
+
